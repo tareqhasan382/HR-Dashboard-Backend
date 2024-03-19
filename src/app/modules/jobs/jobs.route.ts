@@ -9,3 +9,7 @@ router.get("/job/detailsJob/:id", JobController.DetailsJob);
 router.patch("/job/updateJob/:id", JobController.updateJob);
 router.delete("/job/deleteJob/:id", JobController.deleteJob);
 export const JobRoute = router;
+
+// detailsJob
+
+// updateJob

@@ -8,7 +8,11 @@ import { CandidateRoute } from "./app/modules/candidates/candidates.route";
 import { JobRoute } from "./app/modules/jobs/jobs.route";
 
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [
+    "http://localhost:5173",
+    "https://hr-dashboard-frontend.vercel.app",
+    "https://hr-dashboard-frontend.vercel.app/",
+  ],
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };

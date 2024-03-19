@@ -22,6 +22,6 @@ export const CandidateRoute = router;
 
 // getByGender
 
-// candidate/updateCandidate/:id
+// updateCandidate
 
 // deleteCandidate
