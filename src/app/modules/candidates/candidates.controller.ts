@@ -2,7 +2,6 @@
 import catchAsync from "../../../shared/catchAsync";
 import { Request, Response } from "express";
 import CandidateModel from "./candidates.model";
-
 const createCandidate = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   // console.log("body data:", data);
@@ -27,9 +26,34 @@ const createCandidate = catchAsync(async (req: Request, res: Response) => {
     });
   }
 });
-const Candidates = catchAsync(async (req: Request, res: Response) => {
+const Candidates = async (req: Request, res: Response) => {
   try {
-    const result = await CandidateModel.find();
+    const { page, limit, search, gender, status, sortOrder, sortField } =
+      req.query;
+
+    const query: any = {};
+    if (search) {
+      query.name = { $regex: new RegExp(search as string, "i") };
+    }
+    if (gender) {
+      query.gender = gender;
+    }
+    if (status) {
+      query.status = status;
+    }
+
+    const sort: any = {};
+    if (sortOrder && sortField) {
+      sort[sortField as string] = sortOrder === "asc" ? 1 : -1;
+    }
+
+    const count = await CandidateModel.countDocuments(query);
+
+    const result = await CandidateModel.find(query)
+      .sort(sort)
+      .skip((parseInt(page as string) - 1) * parseInt(limit as string))
+      .limit(parseInt(limit as string));
+
     if (result.length <= 0) {
       return res.status(404).json({
         status: "false",
@@ -37,10 +61,15 @@ const Candidates = catchAsync(async (req: Request, res: Response) => {
         data: [],
       });
     }
-    // console.log("Data:", result.length);
+
     return res.status(200).json({
       status: "true",
       message: "Candidates retrieved successfully.",
+      meta: {
+        total: count,
+        page: parseInt(page as string),
+        limit: parseInt(limit as string),
+      },
       data: result,
     });
   } catch (error) {
@@ -49,7 +78,9 @@ const Candidates = catchAsync(async (req: Request, res: Response) => {
       message: "Failed to retrieve candidates.",
     });
   }
-});
+};
+
+export default Candidates;
 const shortlistedCandidates = catchAsync(
   async (req: Request, res: Response) => {
     try {
